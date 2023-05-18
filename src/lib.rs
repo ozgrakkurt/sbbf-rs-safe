@@ -16,7 +16,7 @@ impl Filter {
     pub fn new(bits_per_key: usize, num_keys: usize) -> Self {
         let len = (bits_per_key / 8) * num_keys;
         let len = ((len + BUCKET_SIZE - 1) / BUCKET_SIZE) * BUCKET_SIZE;
-        let len = if len == 0 { 1 } else { len };
+        let len = if len == 0 { BUCKET_SIZE } else { len };
         Self {
             filter_fn: FilterFn::new(),
             buf: Buf::new(len),
