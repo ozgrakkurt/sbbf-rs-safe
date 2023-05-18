@@ -1,0 +1,13 @@
+[package]
+name = "sbbf-rs-safe"
+version = "0.0.1"
+edition = "2021"
+license = "MIT"
+description = "Split block bloom filter implementation"
+homepage = "https://github.com/ozgrakkurt/sbbf-rs-safe"
+repository = "https://github.com/ozgrakkurt/sbbf-rs-safe"
+authors = ["Ozgur Akkurt <oezgurmakkurt@gmail.com>"]
+
+[dependencies]
+sbbf-rs = "0.0.2"
+xxhash-rust = { version = "0.8", features = ["xxh3"] }
