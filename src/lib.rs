@@ -1,6 +1,5 @@
 use sbbf_rs::{FilterFn, ALIGNMENT, BUCKET_SIZE};
 use std::alloc::{alloc_zeroed, dealloc, Layout};
-use xxhash_rust::xxh3::xxh3_64;
 
 /// A split block bloom filter that handles it's own memory
 pub struct Filter {
@@ -90,7 +89,7 @@ impl Filter {
     /// for every call to the filter.
     #[inline(always)]
     pub fn hash<B: AsRef<[u8]>>(val: B) -> u64 {
-        xxh3_64(val.as_ref())
+        wyhash::wyhash(val.as_ref(), 0)
     }
 }
 
