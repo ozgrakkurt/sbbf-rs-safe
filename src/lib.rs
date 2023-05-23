@@ -33,8 +33,8 @@ impl Filter {
     ///
     /// Return true if filter already contained the value.
     #[inline(always)]
-    pub fn insert<B: AsRef<[u8]>>(&self, val: B) -> bool {
-        self.contains_hash(Self::hash(val))
+    pub fn insert<B: AsRef<[u8]>>(&mut self, val: B) -> bool {
+        self.insert_hash(Self::hash(val))
     }
 
     /// Check if the filter contains the hash.
