@@ -7,11 +7,10 @@ fn test_filter() {
     let mut filter = Filter::new(8, data.len());
 
     for i in data.iter() {
-        let bytes = i.to_be_bytes();
-        filter.insert(bytes);
+        filter.insert_hash(*i as u64);
     }
 
     for i in data.iter() {
-        assert!(filter.contains(i.to_be_bytes()), "{i}");
+        assert!(filter.contains_hash(*i as u64), "{i}");
     }
 }
