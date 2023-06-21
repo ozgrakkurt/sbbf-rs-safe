@@ -96,3 +96,6 @@ impl Drop for Buf {
         }
     }
 }
+
+unsafe impl Send for Filter {}
+unsafe impl Sync for Filter {}
