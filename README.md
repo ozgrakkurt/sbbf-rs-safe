@@ -10,4 +10,5 @@ This crate exposes a safe API built on `sbbf-rs`. It handles allocation and (opt
 
 The `Filter::as_bytes` method can be used to restore the filter from given bytes.
 
-This is intended to be an exact implementation of the bloom filter described in [parquet bloom filter spec](https://github.com/apache/parquet-format/blob/master/BloomFilter.md).
+This is mostly an exact implementation of [parquet bloom filter spec](https://github.com/apache/parquet-format/blob/master/BloomFilter.md).
+Difference is, this uses `wyhash` but the spec uses `xxhash64`. User can call `contains_hash` and `insert_hash` methods using their preffered hash algorithm.

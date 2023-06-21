@@ -13,6 +13,11 @@ impl Filter {
     /// Create a new filter using the parameters.
     ///
     /// Calculated length will be rounded up to the nearest multiple of [BUCKET_SIZE]
+    ///
+    /// `bits_per_key` can be used to adjust the false positive rate.
+    /// Some info can be found [here](https://github.com/apache/parquet-format/blob/master/BloomFilter.md#sizing-an-sbbf).
+    ///
+    /// `num_keys` means the number of unique hashes that are expected to be inserted to this bloom filter.
     pub fn new(bits_per_key: usize, num_keys: usize) -> Self {
         let len = bits_per_key * num_keys / 8;
         let len = ((len + BUCKET_SIZE - 1) / BUCKET_SIZE) * BUCKET_SIZE;
@@ -72,6 +77,29 @@ impl Filter {
             buf,
             num_buckets: bytes.len() / BUCKET_SIZE,
         })
+    }
+
+    /// Check if the filter contains the value.
+    #[inline(always)]
+    pub fn contains<B: AsRef<[u8]>>(&self, val: B) -> bool {
+        self.contains_hash(Self::hash(val))
+    }
+
+    /// Insert the value into the filter.
+    ///
+    /// Return true if filter already contained the value.
+    #[inline(always)]
+    pub fn insert<B: AsRef<[u8]>>(&mut self, val: B) -> bool {
+        self.insert_hash(Self::hash(val))
+    }
+
+    /// Hash the value.
+    ///
+    /// This function can be used to pre-hash values to avoid hashing
+    /// for every call to the filter.
+    #[inline(always)]
+    pub fn hash<B: AsRef<[u8]>>(val: B) -> u64 {
+        wyhash::wyhash(val.as_ref(), 0)
     }
 }
 
