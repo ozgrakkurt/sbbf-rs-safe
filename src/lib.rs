@@ -1,5 +1,6 @@
 use sbbf_rs::{FilterFn, ALIGNMENT, BUCKET_SIZE};
 use std::alloc::{alloc_zeroed, dealloc, Layout};
+use std::fmt;
 
 /// A split block bloom filter that handles it's own memory
 pub struct Filter {
@@ -99,3 +100,18 @@ impl Drop for Buf {
 
 unsafe impl Send for Filter {}
 unsafe impl Sync for Filter {}
+
+impl Clone for Filter {
+    fn clone(&self) -> Self {
+        Self::from_bytes(self.as_bytes()).unwrap()
+    }
+}
+
+impl fmt::Debug for Filter {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Filter")
+            .field("filter_fn", &self.filter_fn.which())
+            .field("num_buckets", &self.num_buckets)
+            .finish()
+    }
+}
