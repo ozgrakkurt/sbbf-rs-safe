@@ -12,12 +12,11 @@ pub struct Filter {
 impl Filter {
     /// Create a new filter using the parameters.
     ///
-    /// Calculated length will be rounded up to the nearest multiple of 64.
+    /// Calculated length will be rounded up to the nearest multiple of [BUCKET_SIZE]
     pub fn new(bits_per_key: usize, num_keys: usize) -> Self {
-        assert_eq!(64, BUCKET_SIZE * 2);
         let len = bits_per_key * num_keys / 8;
-        let len = ((len + 64 - 1) / 64) * 64;
-        let len = if len == 0 { 64 } else { len };
+        let len = ((len + BUCKET_SIZE - 1) / BUCKET_SIZE) * BUCKET_SIZE;
+        let len = if len == 0 { BUCKET_SIZE } else { len };
         Self {
             filter_fn: FilterFn::new(),
             buf: Buf::new(len),
@@ -60,7 +59,7 @@ impl Filter {
         }
 
         let len = bytes.len();
-        let len = ((len + 64 - 1) / 64) * 64;
+        let len = ((len + BUCKET_SIZE - 1) / BUCKET_SIZE) * BUCKET_SIZE;
         let len = if len == 0 { 64 } else { len };
 
         let buf = Buf::new(len);
