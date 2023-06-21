@@ -1,6 +1,6 @@
 [package]
 name = "sbbf-rs-safe"
-version = "0.0.4"
+version = "0.1.0"
 edition = "2021"
 license = "MIT"
 description = "Split block bloom filter implementation"
@@ -9,5 +9,4 @@ repository = "https://github.com/ozgrakkurt/sbbf-rs-safe"
 authors = ["Ozgur Akkurt <oezgurmakkurt@gmail.com>"]
 
 [dependencies]
-sbbf-rs = "0.0.2"
-wyhash = "0.5"
+sbbf-rs = "0.2.0"

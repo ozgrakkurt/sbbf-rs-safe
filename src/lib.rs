@@ -11,30 +11,17 @@ pub struct Filter {
 impl Filter {
     /// Create a new filter using the parameters.
     ///
-    /// Calculated length will be rounded up to the nearest multiple of [sbbf_rs::BUCKET_SIZE].
+    /// Calculated length will be rounded up to the nearest multiple of 64.
     pub fn new(bits_per_key: usize, num_keys: usize) -> Self {
-        let len = (bits_per_key / 8) * num_keys;
-        let len = ((len + BUCKET_SIZE - 1) / BUCKET_SIZE) * BUCKET_SIZE;
-        let len = if len == 0 { BUCKET_SIZE } else { len };
+        assert_eq!(64, BUCKET_SIZE * 2);
+        let len = bits_per_key * num_keys / 8;
+        let len = ((len + 64 - 1) / 64) * 64;
+        let len = if len == 0 { 64 } else { len };
         Self {
             filter_fn: FilterFn::new(),
             buf: Buf::new(len),
             num_buckets: len / BUCKET_SIZE,
         }
-    }
-
-    /// Check if the filter contains the value.
-    #[inline(always)]
-    pub fn contains<B: AsRef<[u8]>>(&self, val: B) -> bool {
-        self.contains_hash(Self::hash(val))
-    }
-
-    /// Insert the value into the filter.
-    ///
-    /// Return true if filter already contained the value.
-    #[inline(always)]
-    pub fn insert<B: AsRef<[u8]>>(&mut self, val: B) -> bool {
-        self.insert_hash(Self::hash(val))
     }
 
     /// Check if the filter contains the hash.
@@ -56,7 +43,7 @@ impl Filter {
 
     /// Returns a slice the slice of bytes that represent this filter.
     ///
-    /// The filter can be restored using this bytes with the `Filter::from_bytes` method.
+    /// The filter can be restored using these bytes with the `Filter::from_bytes` method.
     pub fn as_bytes(&self) -> &[u8] {
         unsafe { std::slice::from_raw_parts(self.buf.ptr, self.buf.layout.size()) }
     }
@@ -71,25 +58,20 @@ impl Filter {
             return None;
         }
 
-        let buf = Buf::new(bytes.len());
+        let len = bytes.len();
+        let len = ((len + 64 - 1) / 64) * 64;
+        let len = if len == 0 { 64 } else { len };
+
+        let buf = Buf::new(len);
 
         let buf_bytes = unsafe { std::slice::from_raw_parts_mut(buf.ptr, buf.layout.size()) };
-        buf_bytes.copy_from_slice(bytes);
+        buf_bytes[..bytes.len()].copy_from_slice(bytes);
 
         Some(Self {
             filter_fn: FilterFn::new(),
             buf,
             num_buckets: bytes.len() / BUCKET_SIZE,
         })
-    }
-
-    /// Hash the value.
-    ///
-    /// This function can be used to pre-hash values to avoid hashing
-    /// for every call to the filter.
-    #[inline(always)]
-    pub fn hash<B: AsRef<[u8]>>(val: B) -> u64 {
-        wyhash::wyhash(val.as_ref(), 0)
     }
 }
 
