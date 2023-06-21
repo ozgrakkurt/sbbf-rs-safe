@@ -11,3 +11,20 @@ authors = ["Ozgur Akkurt <oezgurmakkurt@gmail.com>"]
 [dependencies]
 sbbf-rs = "0.2.0"
 wyhash = "0.5"
+
+[dev-dependencies]
+probabilistic-collections = "0.7.0"
+bloom = "0.3.2"
+fastbloom-rs = "0.5.3"
+solana-bloom = "1.16.1"
+criterion = { version = "0.3", features = ["html_reports"] }
+rand = "0.8"
+
+[[bench]]
+name = "bench"
+path = "benches/bench.rs"
+harness = false
+
+[profile.release]
+codegen-units = 1
+lto = true
