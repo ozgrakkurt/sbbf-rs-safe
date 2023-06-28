@@ -46,11 +46,18 @@ impl Filter {
         unsafe { self.filter_fn.insert(self.buf.ptr, self.num_buckets, hash) }
     }
 
-    /// Returns a slice the slice of bytes that represent this filter.
+    /// Returns the slice of bytes that represent this filter.
     ///
     /// The filter can be restored using these bytes with the `Filter::from_bytes` method.
     pub fn as_bytes(&self) -> &[u8] {
         unsafe { std::slice::from_raw_parts(self.buf.ptr, self.buf.layout.size()) }
+    }
+
+    /// Returns a mutable reference to the slice of bytes that represent this filter.
+    ///
+    /// This can be used to directly read into the filter from a file
+    pub fn as_bytes_mut(&mut self) -> &mut [u8] {
+        unsafe { std::slice::from_raw_parts_mut(self.buf.ptr, self.buf.layout.size()) }
     }
 
     /// Restore a filter from the given bytes.
