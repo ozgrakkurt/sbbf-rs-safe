@@ -28,4 +28,4 @@ Although this library is lacking features like removal, counting etc., at the ti
 
 ## Notes on WASM
 
-This library doesn't require nightly except if built using `wasm` target and `simd128` cpu feature enabled. It requrires nightly compiler only if the target is `wasm` and the `simd128` cpu feature is enabled.
+This library doesn't require nightly except if built using `wasm` target and `simd128` cpu feature enabled. It requires nightly compiler only if the target is `wasm` and the `simd128` cpu feature is enabled.
