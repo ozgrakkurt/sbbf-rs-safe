@@ -1,6 +1,7 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use fastbloom_rs::{FilterBuilder, Membership};
 use rand::RngCore;
+use wyhash::wyhash;
 
 const NUM_KEYS: usize = 10_000;
 const BITS_PER_KEY: usize = 10;
@@ -70,7 +71,7 @@ fn benchmark_insert(c: &mut Criterion) {
         let mut filter = sbbf_rs_safe::Filter::new(BITS_PER_KEY, NUM_KEYS);
 
         let num = rng.next_u64().to_be_bytes();
-        b.iter(|| filter.insert(num))
+        b.iter(|| filter.insert_hash(wyhash(black_box(&num), black_box(0))))
     });
 }
 
@@ -137,11 +138,11 @@ fn benchmark_contains(c: &mut Criterion) {
 
         let mut filter = sbbf_rs_safe::Filter::new(BITS_PER_KEY, NUM_KEYS);
         for _ in 0..NUM_KEYS {
-            filter.insert(&rng.next_u64().to_be_bytes());
+            filter.insert_hash(rng.next_u64());
         }
 
         let num = rng.next_u64().to_be_bytes();
-        b.iter(|| filter.contains(black_box(num)))
+        b.iter(|| filter.contains_hash(wyhash(black_box(&num), black_box(0))))
     });
 }
 
