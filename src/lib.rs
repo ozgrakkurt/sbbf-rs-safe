@@ -93,7 +93,7 @@ struct Buf {
 
 impl Buf {
     fn new(len: usize) -> Self {
-        let padded_len = (len + 7) / 8 * 8;
+        let padded_len = (len + ALIGNMENT - 1) / ALIGNMENT * ALIGNMENT;
 
         let layout = Layout::from_size_align(padded_len, ALIGNMENT).unwrap();
         let ptr = unsafe { alloc_zeroed(layout) };
