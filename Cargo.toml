@@ -16,7 +16,7 @@ probabilistic-collections = "0.7"
 bloom = "0.3"
 fastbloom-rs = "0.5"
 solana-bloom = "1.16"
-criterion = { version = "0.3", features = ["html_reports"] }
+criterion = { version = "0.5", features = ["html_reports"] }
 rand = "0.8"
 wyhash = "0.5"
 
