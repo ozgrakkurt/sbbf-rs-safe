@@ -1,6 +1,6 @@
 # sbbf-rs-safe
 
-[![CI](https://github.com/ozgrakkurt/sbbf-rs/actions/workflows/ci.yaml/badge.svg?branch=master)](https://github.com/ozgrakkurt/sbbf-rs/actions/workflows/ci.yaml)
+[![CI](https://github.com/ozgrakkurt/sbbf-rs-safe/actions/workflows/ci.yaml/badge.svg?branch=master)](https://github.com/ozgrakkurt/sbbf-rs-safe/actions/workflows/ci.yaml)
 <a href="https://crates.io/crates/sbbf-rs-safe">
 	<img src="https://img.shields.io/crates/v/sbbf-rs-safe.svg?style=flat-square"
 	alt="Crates.io version" />
