@@ -49,78 +49,56 @@ impl Filter {
     /// Returns the slice of bytes that represent this filter.
     ///
     /// The filter can be restored using these bytes with the `Filter::from_bytes` method.
+    #[inline(always)]
     pub fn as_bytes(&self) -> &[u8] {
-        unsafe { std::slice::from_raw_parts(self.buf.ptr, self.buf.layout.size()) }
+        unsafe { std::slice::from_raw_parts(self.buf.ptr, self.buf.len) }
     }
 
     /// Returns a mutable reference to the slice of bytes that represent this filter.
     ///
     /// This can be used to directly read into the filter from a file
+    #[inline(always)]
     pub fn as_bytes_mut(&mut self) -> &mut [u8] {
-        unsafe { std::slice::from_raw_parts_mut(self.buf.ptr, self.buf.layout.size()) }
+        unsafe { std::slice::from_raw_parts_mut(self.buf.ptr, self.buf.len) }
     }
 
     /// Restore a filter from the given bytes.
     ///
     /// Returns None if the bytes are invalid.
-    pub fn from_bytes<B: AsRef<[u8]>>(bytes: B) -> Option<Self> {
-        let bytes = bytes.as_ref();
+    pub fn from_bytes(bytes: &[u8]) -> Option<Self> {
+        let len = bytes.len();
 
-        if bytes.len() < BUCKET_SIZE {
+        if len == 0 || (len % BUCKET_SIZE != 0) {
             return None;
         }
 
-        let len = bytes.len();
-        let len = ((len + BUCKET_SIZE - 1) / BUCKET_SIZE) * BUCKET_SIZE;
-        let len = if len == 0 { 64 } else { len };
-
         let buf = Buf::new(len);
 
-        let buf_bytes = unsafe { std::slice::from_raw_parts_mut(buf.ptr, buf.layout.size()) };
-        buf_bytes[..bytes.len()].copy_from_slice(bytes);
+        let buf_bytes = unsafe { std::slice::from_raw_parts_mut(buf.ptr, buf.len) };
+        buf_bytes[..len].copy_from_slice(bytes);
 
         Some(Self {
             filter_fn: FilterFn::new(),
             buf,
-            num_buckets: bytes.len() / BUCKET_SIZE,
+            num_buckets: len / BUCKET_SIZE,
         })
-    }
-
-    /// Check if the filter contains the value.
-    #[inline(always)]
-    pub fn contains<B: AsRef<[u8]>>(&self, val: B) -> bool {
-        self.contains_hash(Self::hash(val))
-    }
-
-    /// Insert the value into the filter.
-    ///
-    /// Return true if filter already contained the value.
-    #[inline(always)]
-    pub fn insert<B: AsRef<[u8]>>(&mut self, val: B) -> bool {
-        self.insert_hash(Self::hash(val))
-    }
-
-    /// Hash the value.
-    ///
-    /// This function can be used to pre-hash values to avoid hashing
-    /// for every call to the filter.
-    #[inline(always)]
-    pub fn hash<B: AsRef<[u8]>>(val: B) -> u64 {
-        wyhash::wyhash(val.as_ref(), 0)
     }
 }
 
 struct Buf {
     ptr: *mut u8,
     layout: Layout,
+    len: usize,
 }
 
 impl Buf {
     fn new(len: usize) -> Self {
-        let layout = Layout::from_size_align(len, ALIGNMENT).unwrap();
+        let padded_len = (len + 7) / 8 * 8;
+
+        let layout = Layout::from_size_align(padded_len, ALIGNMENT).unwrap();
         let ptr = unsafe { alloc_zeroed(layout) };
 
-        Self { layout, ptr }
+        Self { layout, ptr, len }
     }
 }
 

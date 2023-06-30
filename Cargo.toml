@@ -1,6 +1,6 @@
 [package]
 name = "sbbf-rs-safe"
-version = "0.2.2"
+version = "0.3.0"
 edition = "2021"
 license = "MIT"
 description = "Split block bloom filter implementation"
@@ -9,16 +9,16 @@ repository = "https://github.com/ozgrakkurt/sbbf-rs-safe"
 authors = ["Ozgur Akkurt <oezgurmakkurt@gmail.com>"]
 
 [dependencies]
-sbbf-rs = "0.2.0"
-wyhash = "0.5"
+sbbf-rs = "0.2"
 
 [dev-dependencies]
-probabilistic-collections = "0.7.0"
-bloom = "0.3.2"
-fastbloom-rs = "0.5.3"
-solana-bloom = "1.16.1"
+probabilistic-collections = "0.7"
+bloom = "0.3"
+fastbloom-rs = "0.5"
+solana-bloom = "1.16"
 criterion = { version = "0.3", features = ["html_reports"] }
 rand = "0.8"
+wyhash = "0.5"
 
 [[bench]]
 name = "bench"
