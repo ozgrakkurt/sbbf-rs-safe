@@ -83,6 +83,13 @@ impl Filter {
             num_buckets: len / BUCKET_SIZE,
         })
     }
+
+    /// Resets all bits to zero in the filter.
+    ///
+    /// The filter is empty when all the bits are zero.
+    pub fn reset(&mut self) {
+        self.as_bytes_mut().fill(0);
+    }
 }
 
 struct Buf {
